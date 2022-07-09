@@ -1,0 +1,305 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.itbuzzpress.chapter4</groupId>
+	<artifactId>ejb2-server-basic</artifactId>
+	<version>1.0</version>
+	<packaging>ejb</packaging>
+	<name>EJB 2 example application</name>
+	<properties>
+		<version.compiler.plugin>3.1</version.compiler.plugin>
+		<version.ejb.plugin>2.3</version.ejb.plugin>
+		<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<version.server.bom>26.1.1.Final</version.server.bom>
+
+		<jakartaee-api.version>8.0.0</jakartaee-api.version>
+
+		<!-- Define the version of the JBoss BOMs we want to import to specify 
+			tested stacks. <version.jboss.bom>22.0.1.Final</version.jboss.bom> -->
+		<!-- For using wildfly-jar-maven-plugin to generating messaging-activemq 
+			layer when jboss-eap-7.4(wildfly 22.0.1.Final) work ok /but wildfly(23+) 
+			not -->
+		<!-- -->
+		<version.jboss.bom>26.1.1.Final</version.jboss.bom>
+		<wildfly.version>${version.jboss.bom}</wildfly.version>
+		<org.wildfly.as.version>${version.jboss.bom}</org.wildfly.as.version>
+
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<failOnMissingWebXml>false</failOnMissingWebXml>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- other plugin versions -->
+		<version.compiler.plugin>3.8.1</version.compiler.plugin>
+		<version.surefire.plugin>2.22.2</version.surefire.plugin>
+		<version.failsafe.plugin>2.22.2</version.failsafe.plugin>
+		<maven.surefire.plugin.version>${version.surefire.plugin}</maven.surefire.plugin.version>
+		<version.war.plugin>3.3.2</version.war.plugin>
+		<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
+
+		<!-- JBoss dependency versions -->
+		<version.wildfly.maven.plugin>7.0.2.Final</version.wildfly.maven.plugin>
+		<version.wildfly.datasources.galleon-pack>2.2.1.Final</version.wildfly.datasources.galleon-pack>
+
+		<jkube.generator.from>registry.redhat.io/ubi8/openjdk-8:latest</jkube.generator.from>
+		<awaitility-proxy.version>3.1.6</awaitility-proxy.version>
+		<awaitility.version>4.1.1</awaitility.version>
+
+		<testLogToFile>true</testLogToFile>
+		<maven.deploy.skip>true</maven.deploy.skip>
+		<ts.skipTests>${skipTests}</ts.skipTests>
+		<enforcer.skip>true</enforcer.skip>
+	</properties>
+	<repositories>
+		<repository>
+			<id>JBoss Repository</id>
+			<url>https://repository.jboss.org/nexus/content/groups/public/</url>
+		</repository>
+	</repositories>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.wildfly.bom</groupId>
+				<artifactId>wildfly-jakartaee8-with-tools</artifactId>
+				<version>${version.server.bom}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<dependencies>
+		<dependency>
+			<groupId>org.jboss.spec.javax.annotation</groupId>
+			<artifactId>jboss-annotations-api_1.3_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.spec.javax.ejb</groupId>
+			<artifactId>jboss-ejb-api_3.2_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Optional, but highly recommended -->
+		<!-- Arquillian allows you to test enterprise code such as EJBs and Transactional(JTA) 
+			JPA from JUnit/TestNG -->
+		<dependency>
+			<groupId>org.jboss.arquillian.junit</groupId>
+			<artifactId>arquillian-junit-container</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.arquillian.protocol</groupId>
+			<artifactId>arquillian-protocol-servlet</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!--end::d[] -->
+		<dependency>
+			<groupId>org.wildfly.arquillian</groupId>
+			<artifactId>wildfly-arquillian-container-managed</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.wildfly</groupId>
+			<artifactId>wildfly-testsuite-shared</artifactId>
+			<version>${version.jboss.bom}</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>net.minidev</groupId>
+					<artifactId>json-smart</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>net.minidev</groupId>
+			<artifactId>json-smart</artifactId>
+			<version>2.4.8</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>3.19.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.shrinkwrap.resolver</groupId>
+			<artifactId>shrinkwrap-resolver-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.shrinkwrap.resolver</groupId>
+			<artifactId>shrinkwrap-resolver-spi</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.shrinkwrap.resolver</groupId>
+			<artifactId>shrinkwrap-resolver-api-maven</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.shrinkwrap.resolver</groupId>
+			<artifactId>shrinkwrap-resolver-spi-maven</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.shrinkwrap.resolver</groupId>
+			<artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.shrinkwrap.resolver</groupId>
+			<artifactId>shrinkwrap-resolver-impl-maven-archive</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.plexus</groupId>
+			<artifactId>plexus-utils</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.awaitility</groupId>
+			<artifactId>awaitility</artifactId>
+			<version>${awaitility.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.awaitility</groupId>
+			<artifactId>awaitility-proxy</artifactId>
+			<version>${awaitility-proxy.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.10.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-ejb-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<ejbVersion>2</ejbVersion>
+					<generateClient>true</generateClient>
+				</configuration>
+			</plugin>
+			<!-- <plugin> <groupId>org.wildfly.plugins</groupId> <artifactId>wildfly-maven-plugin</artifactId> 
+				<version>1.2.1.Final</version> <configuration> <filename>${project.build.finalName}.jar</filename> 
+				</configuration> </plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>process-test-classes</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.wildfly</groupId>
+									<artifactId>wildfly-dist</artifactId>
+									<version>${version.jboss.bom}</version>
+									<type>zip</type>
+									<overWrite>false</overWrite>
+									<outputDirectory>target</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${version.surefire.plugin}</version>
+				<configuration>
+					<enableAssertions>true</enableAssertions>
+					<!-- System properties to forked surefire JVM which runs clients. -->
+					<failIfNoTests>false</failIfNoTests>
+					<systemPropertyVariables>
+						<jboss.home>${basedir}/target/wildfly-${version.jboss.bom}</jboss.home>
+					</systemPropertyVariables>
+				</configuration>
+				<executions>
+					<!-- Disable default-test execution. -->
+					<execution>
+						<id>default-test</id>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>basic-integration-default-full.surefire</id>
+						<phase>test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<!-- Tests to execute. Overriden in webProfileExclusion.profile . -->
+							<includes>
+								<include>com/actionbazaar/listing02/*TestCase.java</include>
+							</includes>
+							<!-- Parameters to test cases. -->
+							<systemPropertyVariables
+								combine.children="append">
+								<jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
+								<jboss.options>-Dee8.preview.mode=true</jboss.options>
+							</systemPropertyVariables>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.wildfly.plugins</groupId>
+				<artifactId>wildfly-jar-maven-plugin</artifactId>
+				<version>${version.wildfly.maven.plugin}</version>
+				<configuration>
+					<feature-packs>
+						<feature-pack>
+							<location>wildfly@maven(org.jboss.universe:community-universe)#${wildfly.version}</location>
+						</feature-pack>
+						<feature-pack>
+							<groupId>org.wildfly</groupId>
+							<artifactId>wildfly-datasources-galleon-pack</artifactId>
+							<version>${version.wildfly.datasources.galleon-pack}</version>
+						</feature-pack>
+					</feature-packs>
+					<layers>
+						<layer>ejb</layer>
+					</layers>
+					<excluded-layers>
+						<layer>deployment-scanner</layer>
+					</excluded-layers>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>package</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
