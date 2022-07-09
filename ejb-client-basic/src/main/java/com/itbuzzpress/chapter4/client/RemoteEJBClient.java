@@ -21,26 +21,24 @@ import javax.rmi.PortableRemoteObject;
 public class RemoteEJBClient {
 
 	public static void main(String[] args) throws Exception {
-		Context ic =   createInitialContextV2();
-
-//		java:global/ejb2-server-basic/AdviceBean!com.itbuzzpress.chapter4.ejb.AdviceHome
-//		java:app/ejb2-server-basic/AdviceBean!com.itbuzzpress.chapter4.ejb.AdviceHome
-//		java:module/AdviceBean!com.itbuzzpress.chapter4.ejb.AdviceHome
-//		java:jboss/exported/ejb2-server-basic/AdviceBean!com.itbuzzpress.chapter4.ejb.AdviceHome
-//		java:global/ejb2-server-basic/AdviceBean!com.itbuzzpress.chapter4.ejb.Advice
-//		java:app/ejb2-server-basic/AdviceBean!com.itbuzzpress.chapter4.ejb.Advice
-//		java:module/AdviceBean!com.itbuzzpress.chapter4.ejb.Advice
-//		java:jboss/exported/ejb2-server-basic/AdviceBean!com.itbuzzpress.chapter4.ejb.Advice
-//		ejb:/ejb2-server-basic/AdviceBean!com.itbuzzpress.chapter4.ejb.Advice
+		Context context =   createInitialContextV2();
+  
+		try {
+			java.lang.Object obj = context.lookup("ejb:/ejb2-server-basic/AdviceBean!com.itbuzzpress.chapter4.ejb.Advice");
+		    
+		    // Old EJB2 style migrate to EJB3 style
+//		    AdviceHome home = (AdviceHome) javax.rmi.PortableRemoteObject.narrow(obj, AdviceHome.class); //This is EJB2 style 
+//		    Advice advisor = home.create();
+		    
+		    Advice advisor = (Advice)obj ; //EJB 3 style
+		    System.out.println(advisor.getAdvice());
+		}finally {
+			//https://docs.jboss.org/author/display/WFLY/Scoped%20EJB%20client%20contexts.html
+			if (context != null) {
+				context.close();
+			} 
+		}
 		
-	    Object o = ic.lookup("ejb:/ejb2-server-basic/AdviceBean!com.itbuzzpress.chapter4.ejb.Advice");
-	    
-	    // Old EJB2 style migrate to EJB3 style
-//	    AdviceHome home = (AdviceHome) javax.rmi.PortableRemoteObject.narrow(o, AdviceHome.class); //This is old style 
-//	    Advice advisor = home.create();
-	    
-	    Advice advisor = (Advice)o ;
-	    System.out.println(advisor.getAdvice());
 
 
 	}
