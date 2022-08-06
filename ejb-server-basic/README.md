@@ -7,4 +7,5 @@ This example demonstrates the usage of Remote EJB 3.2 a Java EE Environment.
 ###### Deploy
 ```shell
 mvn clean install wildfly:deploy
+java -jar target\ejb2-server-basic-bootable.jar  -Djboss.bind.address=0.0.0.0
 ```

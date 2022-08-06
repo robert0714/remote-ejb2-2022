@@ -12,7 +12,7 @@
 		<version.ejb.plugin>2.3</version.ejb.plugin>
 		<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<version.server.bom>26.1.1.Final</version.server.bom>
+		
 
 		<jakartaee-api.version>8.0.0</jakartaee-api.version>
 
@@ -22,7 +22,10 @@
 			layer when jboss-eap-7.4(wildfly 22.0.1.Final) work ok /but wildfly(23+) 
 			not -->
 		<!-- -->
-		<version.jboss.bom>26.1.1.Final</version.jboss.bom>
+		<version.jboss.bom>${version.server.bom}</version.jboss.bom> 
+		<!-- <version.server.bom>23.0.2.Final</version.server.bom>-->
+        <version.server.bom>26.1.1.Final</version.server.bom>
+
 		<wildfly.version>${version.jboss.bom}</wildfly.version>
 		<org.wildfly.as.version>${version.jboss.bom}</org.wildfly.as.version>
 
@@ -275,22 +278,18 @@
 				<artifactId>wildfly-jar-maven-plugin</artifactId>
 				<version>${version.wildfly.maven.plugin}</version>
 				<configuration>
-					<feature-packs>
+                    <feature-packs>
 						<feature-pack>
 							<location>wildfly@maven(org.jboss.universe:community-universe)#${wildfly.version}</location>
 						</feature-pack>
-						<feature-pack>
-							<groupId>org.wildfly</groupId>
-							<artifactId>wildfly-datasources-galleon-pack</artifactId>
-							<version>${version.wildfly.datasources.galleon-pack}</version>
-						</feature-pack>
-					</feature-packs>
+					</feature-packs>				
 					<layers>
 						<layer>ejb</layer>
 					</layers>
+					<!--
 					<excluded-layers>
 						<layer>deployment-scanner</layer>
-					</excluded-layers>
+					</excluded-layers>-->
 				</configuration>
 				<executions>
 					<execution>

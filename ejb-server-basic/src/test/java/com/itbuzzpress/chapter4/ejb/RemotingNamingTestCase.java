@@ -54,6 +54,8 @@ public class RemotingNamingTestCase {
 		jar.addPackage(com.itbuzzpress.chapter4.exception.InsufficientFundsException.class.getPackage());
 		jar.addAsManifestResource(new FileAsset(new File("src/test/resources/META-INF/ejb-jar-remoting.xml")),
 				"ejb-jar.xml");
+		jar.addAsManifestResource(new FileAsset(new File("src/test/resources/META-INF/wildfly-config.xml")),
+				"wildfly-config.xml");
 		File[] files = resolver().loadPomFromFile("pom.xml").importRuntimeDependencies()
 				.resolve("org.apache.commons:commons-lang3:3.12.0").withTransitivity().asFile();
 		ear.addAsLibraries(files); 
@@ -72,7 +74,7 @@ public class RemotingNamingTestCase {
 		logger.info("starting remoting ejb client test");    
 		try {
 			String lookupName = "ejb:/ejb2-server-basic/AdviceBean!com.itbuzzpress.chapter4.ejb.Advice" ;
-			this.context = createInitialContextV1();
+			this.context = createInitialContextV2();
 			Advice advice = lookupV2(Advice.class, lookupName);
 			 
 			final 	String adviceContent = advice.getAdvice();
@@ -112,6 +114,7 @@ public class RemotingNamingTestCase {
         jndiProperties.put(Context.INITIAL_CONTEXT_FACTORY, "org.wildfly.naming.client.WildFlyInitialContextFactory");
         //use HTTP upgrade, an initial upgrade requests is sent to upgrade to the remoting protocol
         jndiProperties.put(Context.PROVIDER_URL,"remote+http://localhost:8080");
+//        jndiProperties.put(Context.PROVIDER_URL,"http://localhost:8080/wildfly-services");
 //      jndiProperties.put(SECURITY_PRINCIPAL, "admin");
 //		jndiProperties.put(SECURITY_CREDENTIALS, "secret123!");     
         

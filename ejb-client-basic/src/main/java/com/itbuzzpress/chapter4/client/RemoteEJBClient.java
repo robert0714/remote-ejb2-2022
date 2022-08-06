@@ -56,17 +56,5 @@ public class RemoteEJBClient {
 		// jndiProperties.put(SECURITY_CREDENTIALS, "secret123!");
 
 		return new InitialContext(jndiProperties);
-	}
-
-	private static Context createInitialContextV1() throws NamingException {
-		Properties jndiProperties = new Properties();
-		jndiProperties.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.remote.client.InitialContextFactory");
-		jndiProperties.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
-		jndiProperties.put(Context.PROVIDER_URL, "http-remoting://localhost:8080");
-		jndiProperties.put("jboss.naming.client.ejb.context", true);
-//  jndiProperties.put(SECURITY_PRINCIPAL, "admin");
-//	jndiProperties.put(SECURITY_CREDENTIALS, "secret123!");
-
-		return new InitialContext(jndiProperties);
-	}
+	} 
 }
